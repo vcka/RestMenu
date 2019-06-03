@@ -73,11 +73,9 @@ public class MenuItemController {
     public ResponseEntity<Void> createMenuItem(@RequestBody MenuItem menuItem) {
 
         MenuItem createdMenuItem = menuRepository.save(menuItem);
-
-        // Location
-        // Get current resource url
-        /// {id}
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(createdMenuItem.getId())
+        URI uri = ServletUriComponentsBuilder
+                .fromCurrentRequest().path("/{id}")
+                .buildAndExpand(createdMenuItem.getId())
                 .toUri();
 
         return ResponseEntity.created(uri).build();
