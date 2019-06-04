@@ -23,6 +23,11 @@ public class MenuItem{
             mappedBy = "menuItem", orphanRemoval = true)
     private List<MenuItemComment> comments = new ArrayList<>();
 
+    @OneToOne
+//            (cascade = CascadeType.ALL,
+//            mappedBy = "menuItem", orphanRemoval = true)
+    private MenuItemFile fileName;
+
     public MenuItem() {
     }
 
@@ -63,4 +68,9 @@ public class MenuItem{
         comment.setMenuItem(null);
         this.comments.remove(comment);
     }
+
+//    public void addFile(MenuItemFile menuItemFile){
+//        fileName.add(menuItemFile);
+//        menuItemFile.setMenuItem(this);
+//    }
 }

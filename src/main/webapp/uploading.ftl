@@ -1,5 +1,4 @@
-<!-- FreeMarker Macros -->
-<#import "/spring.ftl" as spring/>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -8,7 +7,7 @@
     </head>
 
     <body onload="updateSize();">
-        <form name="uploadingForm" enctype="multipart/form-data" action="/api/menu/upload" method="POST">
+        <form name="uploadingForm" enctype="multipart/form-data"  method="POST">
             <p>
                 <input id="fileInput" type="file" name="uploadingFiles" onchange="updateSize();" multiple>
                 selected files: <span id="fileNum">0</span>;
@@ -18,6 +17,17 @@
                 <input type="submit" value="Upload files">
             </p>
         </form>
+        <form id="post">
+                    <p>
+                        name: <input type="text" name="name"><br>
+                        description: <input type="text" name="description"><br>
+                    </p>
+                    <p>
+                        <input type="submit" value="Add item">
+                    </p>
+                </form>
+
+        <span id="response"><span>
         <div>
             <div>Uploaded files:</div>
             <#list files as file>
@@ -26,6 +36,8 @@
             </div>
             </#list>
         </div>
+        <!--<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>-->
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script>
             function updateSize() {
                 var nBytes = 0,
@@ -44,7 +56,68 @@
 
                 document.getElementById("fileNum").innerHTML = nFiles;
                 document.getElementById("fileSize").innerHTML = sOutput;
+
+                var basicInfo = JSON.stringify(
+                    {
+                        name : 'makas',
+                        description : 'kakas'
+                    });
+
+                            $.ajax({
+                                url: '/api/add',
+                                dataType: 'text',
+                                type: 'post',
+                                contentType: 'application/json',
+                                data: basicInfo,
+                                success: function( data, textStatus, jQxhr ){
+                                    $('#response').html( data );
+                                },
+                                error: function( jqXhr, textStatus, errorThrown ){
+                                    alert( errorThrown );
+                                }
+                            });
+
+                            $(document).ready(function (e) {
+                             $("#fileInput").on('submit',(function(e) {
+                              e.preventDefault();
+                              $.ajax({
+                                     url: "/api/upload",
+                               type: "POST",
+                               data:  new FormData(this),
+                               contentType: false,
+                                     cache: false,
+                               processData:false,
+                               beforeSend : function()
+                               {
+                                //$("#preview").fadeOut();
+                                $("#err").fadeOut();
+                               },
+                               success: function(data)
+                                  {
+                                if(data=='invalid')
+                                {
+                                 // invalid file format.
+                                 $("#err").html("Invalid File !").fadeIn();
+                                }
+                                else
+                                {
+                                 // view uploaded file.
+                                 $("#preview").html(data).fadeIn();
+                                 $("#form")[0].reset();
+                                }
+                                  },
+                                 error: function(e)
+                                  {
+                                  alert(error);
+                                $("#err").html(e).fadeIn();
+                                  }
+                                });
+                             }));
+                            });
+
+
             }
         </script>
+
     </body>
 </html>

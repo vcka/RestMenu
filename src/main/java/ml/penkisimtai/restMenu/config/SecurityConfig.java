@@ -1,18 +1,14 @@
 package ml.penkisimtai.restMenu.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -48,30 +44,36 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
         auth.inMemoryAuthentication()
-                .withUser("user1").password(passwordEncoder().encode("user1Pass")).roles("USER")
-                .and()
-                .withUser("user2").password(passwordEncoder().encode("user2Pass")).roles("USER")
-                .and()
                 .withUser(login).password(passwordEncoder().encode(password)).roles("ADMIN");
     }
 
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
+        http.headers().frameOptions().disable();
         http
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/api/menu").permitAll()
+                .antMatchers("/api/items**").permitAll()
+                .antMatchers("/").permitAll()
+//                .antMatchers("/menuItems/**").permitAll()
                 .antMatchers("/admin/**").hasRole("ADMIN")
-                .antMatchers("/api/**").hasRole("ADMIN")
-                .antMatchers("/api/menu/**").hasRole("ADMIN")
-//                .antMatchers("/anonymous*").anonymous()
+                .antMatchers("/api/remove**").hasRole("ADMIN")
+                .antMatchers("/api/edit**").hasRole("ADMIN")
+                .antMatchers("/api/comment**").permitAll()
+                .antMatchers("/api/add**").hasRole("ADMIN")
+                .antMatchers("/api/upload**").hasRole("ADMIN")
                 .antMatchers("/login*").permitAll()
+
+//                .antMatchers(HttpMethod.POST, "/api**").hasRole("ADMIN")
+//                .antMatchers(HttpMethod.DELETE, "/api**").hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
 //                .loginPage("/login.html")
                 .loginProcessingUrl("/perform_login")
-                .defaultSuccessUrl("/admin", true);
+                .defaultSuccessUrl("/admin", true)
+                .and()
+                .httpBasic();
                 //.failureUrl("/login.html?error=true")
 //                .failureHandler()
 

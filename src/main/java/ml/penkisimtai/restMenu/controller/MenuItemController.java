@@ -1,5 +1,6 @@
 package ml.penkisimtai.restMenu.controller;
 
+import ml.penkisimtai.restMenu.exception.ResourceException;
 import ml.penkisimtai.restMenu.model.MenuItemComment;
 import ml.penkisimtai.restMenu.model.MenuItem;
 import ml.penkisimtai.restMenu.repository.MenuRepository;
@@ -7,15 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.IOException;
 import java.net.URI;
 import java.util.Optional;
 
@@ -28,17 +25,17 @@ public class MenuItemController {
         this.menuRepository = menuRepository;
     }
 
-    @GetMapping("/api/menu")
+    @GetMapping("/api/items")
     public Iterable<MenuItem> getAllMenuItems() {
         return menuRepository.findAll();
     }
 
-    @GetMapping("/api/menu/{id}")
+    @GetMapping("/api/items/{id}")
     public Optional<MenuItem> getCourse(@PathVariable long id) {
         return menuRepository.findById(id);
     }
 
-    @DeleteMapping("/api/menu/{id}")
+    @DeleteMapping("/api/remove/{id}")
     public ResponseEntity<Void> deleteMenuItem(@PathVariable long id) {
 
         Optional<MenuItem> menuItem = menuRepository.findById(id);
@@ -51,7 +48,7 @@ public class MenuItemController {
         return ResponseEntity.notFound().build();
     }
 
-    @PutMapping("/api/menu/{id}")
+    @PutMapping("/api/edit/{id}")
     public ResponseEntity<MenuItem> updateMenuItem(@PathVariable long id, @RequestBody MenuItem menuItem) {
 
         Optional<MenuItem> menuItemUpdated = menuRepository.findById(id);
@@ -63,7 +60,7 @@ public class MenuItemController {
         return ResponseEntity.notFound().build();
     }
 
-    @PutMapping("/api/menu/{id}/comment")
+    @PutMapping("/api/comment/{id}")
     public ResponseEntity<MenuItem> updateMenuItemComment(@PathVariable long id, @RequestBody MenuItemComment itemComment) {
 
         Optional<MenuItem> menuItemUpdated = menuRepository.findById(id);
@@ -76,20 +73,27 @@ public class MenuItemController {
         return ResponseEntity.notFound().build();
     }
 
-    @PostMapping("/api/menu")
+    @PostMapping("/api/add")
     public ResponseEntity<Void> createMenuItem(@RequestBody MenuItem menuItem) {
+//        if (menuRepository.findByName(menuItem.getName()).isPresent()) {
+//            return ResponseEntity.ok().build();
+//        }
+        try {
+            MenuItem createdMenuItem = menuRepository.save(menuItem);
+            URI uri = ServletUriComponentsBuilder
+                    .fromCurrentRequest().path("/{id}")
+                    .buildAndExpand(createdMenuItem.getId())
+                    .toUri();
 
-        MenuItem createdMenuItem = menuRepository.save(menuItem);
-        URI uri = ServletUriComponentsBuilder
-                .fromCurrentRequest().path("/{id}")
-                .buildAndExpand(createdMenuItem.getId())
-                .toUri();
+            return ResponseEntity.created(uri).build();
+        } catch (Exception e) {
+            throw new ResourceException(HttpStatus.NOT_FOUND, "Resource allready exists");
+        }
 
-        return ResponseEntity.created(uri).build();
     }
 
-    @RequestMapping("/logout")
-    public void exit(HttpServletRequest request, HttpServletResponse response) {
+    @GetMapping("/logout")
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
         new SecurityContextLogoutHandler().logout(request, null, null);
         try {
             response.sendRedirect(request.getHeader("/admin"));
