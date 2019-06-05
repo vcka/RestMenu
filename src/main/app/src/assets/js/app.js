@@ -13,6 +13,10 @@ $.ajax({
   async: false,
   success: function(data) {
     role = data.username;
+    if (role == "admin") {
+      $('#login').attr("href", "/logoff");
+      $('#login').text("Logout");
+    }
   }
 });
 
@@ -50,7 +54,6 @@ $('#dishesList').on('click', 'td', function() {
           <textarea class="form-control" id="message-text">${data.description}</textarea>
         </div>
       </form>`);
-
     } else {
       $('#description').html(data.description);
       $('#comments').html("");
@@ -66,7 +69,7 @@ $('#dishesList').on('click', 'td', function() {
   });
   if (role == "admin") {
     $('.modal-footer').append(`<button id="delete" value="${id}" class="btn btn-danger">Delete</button>`);
-    $('.modal-footer').append(`<button id="save" class="btn btn-default">Save</button>`);
+    $('.modal-footer').append(`<button id="save" value="${id}" class="btn btn-primary">Save</button>`);
   }
   $('#exampleModal').modal('show');
 
@@ -105,6 +108,27 @@ $('.modal-footer').on('click', '#delete', function() {
   $.ajax({
     url: 'http://localhost:8089/api/remove/' + id,
     type: 'DELETE',
+    success: function(data) {
+      $('#exampleModal').modal('hide');
+      location.reload();
+    }
+  });
+});
+
+$('.modal-footer').on('click', '#save', function() {
+  var id = ($(this).val());
+  var name = ($('#recipient-name').val());
+  var description = ($('#message-text').val());
+  var data = {
+    "id": id,
+    "name": name,
+    "description": description
+  };
+  $.ajax({
+    url: 'http://localhost:8089/api/edit/' + id,
+    contentType: 'application/json',
+    type: 'PUT',
+    data: JSON.stringify(data),
     success: function(data) {
       $('#exampleModal').modal('hide');
       location.reload();
