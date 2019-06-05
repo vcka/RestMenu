@@ -23,28 +23,12 @@ public class ExceptionHandlerAdvice {
         return ResponseEntity.status(e.getHttpStatus()).body(e.getMessage());
     }
 
-//    @ExceptionHandler(value = { MaxUploadSizeExceededException.class })
-//    protected ResponseEntity handleMaxUploadSizeExceededException(Exception ex, WebRequest request) {
-//        MaxUploadSizeExceededException musee = (MaxUploadSizeExceededException)ex;
-//        FileUploadBase.SizeLimitExceededException slee = musee.getCause() instanceof FileUploadBase.SizeLimitExceededException ? (FileUploadBase.SizeLimitExceededException) musee.getCause() : null;
-//        Long maxSize = slee == null ? musee.getMaxUploadSize() : slee.getPermittedSize();
-//        Long actualSize = slee == null ? Long.parseLong(request.getHeader("Content-Length")) : slee.getActualSize();
-//
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.add("Location", "/admin");
-//        return new ResponseEntity<String>(headers,HttpStatus.FOUND);
-//    }
-
     private static final Logger logger = LoggerFactory.getLogger("ExceptionHandlerAdvice.class");
 
     @ExceptionHandler
     public ResponseEntity maxSizeError(MultipartException e, RedirectAttributes redirectAttributes) {
         logger.info("Max File Size Exception Occurs");
         redirectAttributes.addFlashAttribute("message", "Excced Max File Size Error");
-        Error error = new Error();
-//        error.setCode(HttpStatus.NOT_FOUND);
-//        error.setMessage("ID not found OR Your custom message or e.getMessage()");
-//        return new ResponseEntity<Error>(error, HttpStatus.INTERNAL_SERVER_ERROR);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 }

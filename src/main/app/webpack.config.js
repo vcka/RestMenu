@@ -5,11 +5,11 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 module.exports = {
   entry: './src/index.js',
-  mode: 'development',
+  mode: 'production',
   devtool: 'inline-source-map',
   output: {
     filename: 'index.js',
-    path: path.resolve(__dirname, 'public')
+    path: path.resolve(__dirname, '../resources/static')
   },
   devServer: {
     contentBase: './public'
