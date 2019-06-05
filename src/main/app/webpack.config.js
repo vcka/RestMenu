@@ -70,10 +70,10 @@ module.exports = {
       title: 'My menu',
       template: 'src/index.hbs'
     }),
-    new HtmlWebpackPlugin({
-      title: 'My menu',
-      filename: 'admin.html',
-      template: 'src/admin.hbs'
-    })
+    // new HtmlWebpackPlugin({
+    //   title: 'My menu',
+    //   filename: 'admin.html',
+    //   template: 'src/admin.hbs'
+    // })
   ]
 };

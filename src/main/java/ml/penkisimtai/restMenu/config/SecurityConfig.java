@@ -33,7 +33,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/items/**").permitAll()
                 .antMatchers("/**").permitAll()
                 .antMatchers("/images/**").permitAll()
-                .antMatchers("admin.html").hasRole("ADMIN")
                 .antMatchers("/api/remove**").hasRole("ADMIN")
                 .antMatchers("/api/edit**").hasRole("ADMIN")
                 .antMatchers("/api/comment**").permitAll()
