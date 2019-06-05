@@ -5,7 +5,7 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 module.exports = {
   entry: './src/index.js',
-  mode: 'production',
+  mode: 'development',
   devtool: 'inline-source-map',
   output: {
     filename: 'index.js',
@@ -67,8 +67,13 @@ module.exports = {
       Popper: ['popper.js', 'default']
     }),
     new HtmlWebpackPlugin({
-      title: 'Labas dienas',
+      title: 'My menu',
       template: 'src/index.hbs'
+    }),
+    new HtmlWebpackPlugin({
+      title: 'My menu',
+      filename: 'admin.html',
+      template: 'src/admin.hbs'
     })
   ]
 };

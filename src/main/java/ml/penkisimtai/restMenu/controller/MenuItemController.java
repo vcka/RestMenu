@@ -7,6 +7,8 @@ import ml.penkisimtai.restMenu.repository.MenuRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -24,6 +26,13 @@ public class MenuItemController {
     @Autowired
     public void setMenuRepository(MenuRepository menuRepository) {
         this.menuRepository = menuRepository;
+    }
+
+    @CrossOrigin
+    @GetMapping("/api/params")
+    public Object userName() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return auth.getPrincipal();
     }
 
     @CrossOrigin
@@ -74,14 +83,11 @@ public class MenuItemController {
             menuRepository.save(menuItem);
             return new ResponseEntity<MenuItem>(menuItem, HttpStatus.OK);
         }
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.unprocessableEntity().build();
     }
 
     @PostMapping("/api/add")
     public ResponseEntity<Void> createMenuItem(@RequestBody MenuItem menuItem) {
-//        if (menuRepository.findByName(menuItem.getName()).isPresent()) {
-//            return ResponseEntity.ok().build();
-//        }
         try {
             MenuItem createdMenuItem = menuRepository.save(menuItem);
             URI uri = ServletUriComponentsBuilder
@@ -91,16 +97,16 @@ public class MenuItemController {
 
             return ResponseEntity.created(uri).build();
         } catch (Exception e) {
-            throw new ResourceException(HttpStatus.NOT_FOUND, "Resource allready exists");
+            throw new ResourceException(HttpStatus.CONFLICT, "Resource allready exists");
         }
 
     }
 
-    @GetMapping("/logout")
+    @GetMapping("/logoff")
     public void logout(HttpServletRequest request, HttpServletResponse response) {
         new SecurityContextLogoutHandler().logout(request, null, null);
         try {
-            response.sendRedirect(request.getHeader("/admin"));
+            response.sendRedirect("/");
         } catch (Exception e) {
             //  e.printStackTrace();
 

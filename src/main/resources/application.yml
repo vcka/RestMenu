@@ -3,6 +3,8 @@ spring:
   data:
     rest:
       base-path: /api
+  output:
+    ansi: enabled
   main:
     banner-mode: "off"
   datasource:
@@ -17,7 +19,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
-    show-sql: "true"
+    show-sql: "false"
 #endpoints:
 #  mappings:
 #    sensitive: "false"
