@@ -17,6 +17,7 @@ import java.net.URI;
 import java.util.Optional;
 
 @RestController
+@CrossOrigin(origins = "*")
 public class MenuItemController {
     private MenuRepository menuRepository;
 
@@ -25,11 +26,13 @@ public class MenuItemController {
         this.menuRepository = menuRepository;
     }
 
+    @CrossOrigin
     @GetMapping("/api/items")
     public Iterable<MenuItem> getAllMenuItems() {
         return menuRepository.findAll();
     }
 
+    @CrossOrigin
     @GetMapping("/api/items/{id}")
     public Optional<MenuItem> getCourse(@PathVariable long id) {
         return menuRepository.findById(id);
@@ -60,6 +63,7 @@ public class MenuItemController {
         return ResponseEntity.notFound().build();
     }
 
+    @CrossOrigin
     @PutMapping("/api/comment/{id}")
     public ResponseEntity<MenuItem> updateMenuItemComment(@PathVariable long id, @RequestBody MenuItemComment itemComment) {
 
