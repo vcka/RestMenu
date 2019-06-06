@@ -44,7 +44,11 @@ public class MenuItemController {
     @CrossOrigin
     @GetMapping("/api/items/{id}")
     public Optional<MenuItem> getCourse(@PathVariable long id) {
-        return menuRepository.findById(id);
+        try {
+            return menuRepository.findById(id);
+        } catch (Exception e) {
+            throw new ResourceException(HttpStatus.BAD_REQUEST, "Check your request");
+        }
     }
 
     @DeleteMapping("/api/remove/{id}")
