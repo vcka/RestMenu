@@ -58,7 +58,7 @@ public class MenuItemController {
         return menuRepository.findAll();
     }
 
-    @ApiOperation(value = "Get an menu item by Id")
+    @ApiOperation(value = "Get a menu item by Id")
     @GetMapping("/api/items/{id}")
     public Optional<MenuItem> getCourse(@ApiParam(value = "Menu item id from which menu item object will retrieve", required = true) @PathVariable(value = "id") long id) {
         try {
