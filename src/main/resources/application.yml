@@ -19,7 +19,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
-    show-sql: "false"
+    show-sql: "true"
 #endpoints:
 #  mappings:
 #    sensitive: "false"

@@ -85,21 +85,15 @@ public class MenuItemController {
             MenuItem menuItem = menuItemUpdated.get();
             menuItem.addComment(itemComment);
             menuRepository.save(menuItem);
-            return new ResponseEntity<MenuItem>(menuItem, HttpStatus.OK);
+            return new ResponseEntity<MenuItem>(menuItem, HttpStatus.CREATED);
         }
         return ResponseEntity.unprocessableEntity().build();
     }
 
     @PostMapping("/api/add")
-    public ResponseEntity<Void> createMenuItem(@RequestBody MenuItem menuItem) {
+    public ResponseEntity<MenuItem> createMenuItem(@RequestBody MenuItem menuItem) {
         try {
-            MenuItem createdMenuItem = menuRepository.save(menuItem);
-            URI uri = ServletUriComponentsBuilder
-                    .fromCurrentRequest().path("/{id}")
-                    .buildAndExpand(createdMenuItem.getId())
-                    .toUri();
-
-            return ResponseEntity.created(uri).build();
+            return new ResponseEntity<MenuItem>(menuItem, HttpStatus.CREATED);
         } catch (Exception e) {
             throw new ResourceException(HttpStatus.CONFLICT, "Resource allready exists");
         }
