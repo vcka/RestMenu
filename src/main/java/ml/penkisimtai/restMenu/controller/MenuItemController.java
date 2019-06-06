@@ -41,7 +41,7 @@ public class MenuItemController {
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
     })
     @GetMapping("/api/params")
-    public Object userName() {
+    public Object getSessionUserName() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return auth.getPrincipal();
     }
@@ -60,18 +60,18 @@ public class MenuItemController {
 
     @ApiOperation(value = "Get a menu item by Id")
     @GetMapping("/api/items/{id}")
-    public Optional<MenuItem> getCourse(@ApiParam(value = "Menu item id from which menu item object will retrieve", required = true) @PathVariable(value = "id") long id) {
+    public ResponseEntity<MenuItem> getItemById(@ApiParam(value = "Menu item id from which menu item object will retrieve", required = true) @PathVariable(value = "id") long id) {
         try {
-            return menuRepository.findById(id);
+            return new ResponseEntity<MenuItem>(menuRepository.findById(id).get(), HttpStatus.OK);
+//            return menuRepository.findById(id);
         } catch (Exception e) {
-            logger.error(e.getMessage());
-            throw new ResourceException(HttpStatus.BAD_REQUEST, "Check your request");
+            throw new ResourceException(HttpStatus.BAD_REQUEST, "This menu item does not exists. Id: " + id);
         }
     }
 
     @ApiOperation(value = "Delete a menu item")
     @DeleteMapping("/api/remove/{id}")
-    public ResponseEntity<Void> deleteMenuItem(
+    public ResponseEntity<Void> deleteMenuItemById(
             @ApiParam(value = "Menu item Id from which menu item object will delete from database table", required = true) @PathVariable(value = "id") long id) {
 
         Optional<MenuItem> menuItem = menuRepository.findById(id);
@@ -86,7 +86,7 @@ public class MenuItemController {
 
     @ApiOperation(value = "Update a menu item")
     @PutMapping("/api/edit/{id}")
-    public ResponseEntity<MenuItem> updateMenuItem(
+    public ResponseEntity<MenuItem> updateMenuItemById(
             @ApiParam(value = "Menu item Id to update menu item object", required = true) @PathVariable(value = "id") long id,
             @ApiParam(value = "Update menu item object", required = true) @RequestBody MenuItem menuItem) {
 
@@ -102,7 +102,7 @@ public class MenuItemController {
 
     @ApiOperation(value = "Add/update a menu item comments")
     @PutMapping("/api/comment/{id}")
-    public ResponseEntity<MenuItem> updateMenuItemComment(
+    public ResponseEntity<MenuItem> updateMenuItemCommentById(
             @ApiParam(value = "Menu item comment Id to add/update menu item comment object", required = true) @PathVariable(value = "id") long id,
             @ApiParam(value = "Add/update menu item comment object", required = true) @RequestBody MenuItemComment itemComment) {
 
@@ -141,6 +141,16 @@ public class MenuItemController {
         new SecurityContextLogoutHandler().logout(request, null, null);
         try {
             response.sendRedirect("/");
+        } catch (Exception e) {
+            //  e.printStackTrace();
+
+        }
+    }
+
+    @GetMapping("/doc")
+    public void swaggerDoc(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            response.sendRedirect("/swagger-ui.html");
         } catch (Exception e) {
             //  e.printStackTrace();
 
