@@ -1,5 +1,6 @@
 package ml.penkisimtai.restMenu.controller;
 
+import io.swagger.annotations.*;
 import ml.penkisimtai.restMenu.exception.ResourceException;
 import ml.penkisimtai.restMenu.model.MenuItemComment;
 import ml.penkisimtai.restMenu.model.MenuItem;
@@ -15,11 +16,13 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.net.URI;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
-@CrossOrigin(origins = "*")
+@Api(value = "Restaurant menu Management System", description = "Restaurant menu Management system example project")
 public class MenuItemController {
     private MenuRepository menuRepository;
 
@@ -28,22 +31,34 @@ public class MenuItemController {
         this.menuRepository = menuRepository;
     }
 
-    @CrossOrigin
+    @ApiOperation(value = "View session params", response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully retrieved list"),
+            @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+    })
     @GetMapping("/api/params")
     public Object userName() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return auth.getPrincipal();
     }
 
-    @CrossOrigin
+    @ApiOperation(value = "View a list of available menu items", response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully retrieved list"),
+            @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+    })
     @GetMapping("/api/items")
     public Iterable<MenuItem> getAllMenuItems() {
         return menuRepository.findAll();
     }
 
-    @CrossOrigin
+    @ApiOperation(value = "Get an menu item by Id")
     @GetMapping("/api/items/{id}")
-    public Optional<MenuItem> getCourse(@PathVariable long id) {
+    public Optional<MenuItem> getCourse(@ApiParam(value = "Menu item id from which menu item object will retrieve", required = true) @PathVariable(value = "id") long id) {
         try {
             return menuRepository.findById(id);
         } catch (Exception e) {
@@ -51,8 +66,10 @@ public class MenuItemController {
         }
     }
 
+    @ApiOperation(value = "Delete a menu item")
     @DeleteMapping("/api/remove/{id}")
-    public ResponseEntity<Void> deleteMenuItem(@PathVariable long id) {
+    public ResponseEntity<Void> deleteMenuItem(
+            @ApiParam(value = "Menu item Id from which menu item object will delete from database table", required = true) @PathVariable(value = "id") long id) {
 
         Optional<MenuItem> menuItem = menuRepository.findById(id);
 
@@ -64,8 +81,11 @@ public class MenuItemController {
         return ResponseEntity.notFound().build();
     }
 
+    @ApiOperation(value = "Update a menu item")
     @PutMapping("/api/edit/{id}")
-    public ResponseEntity<MenuItem> updateMenuItem(@PathVariable long id, @RequestBody MenuItem menuItem) {
+    public ResponseEntity<MenuItem> updateMenuItem(
+            @ApiParam(value = "Menu item Id to update menu item object", required = true) @PathVariable(value = "id") long id,
+            @ApiParam(value = "Update menu item object", required = true) @Valid @RequestBody MenuItem menuItem) {
 
         Optional<MenuItem> menuItemUpdated = menuRepository.findById(id);
         if (menuItemUpdated.isPresent()) {
@@ -76,9 +96,11 @@ public class MenuItemController {
         return ResponseEntity.notFound().build();
     }
 
-    @CrossOrigin
+    @ApiOperation(value = "Add/update a menu item comments")
     @PutMapping("/api/comment/{id}")
-    public ResponseEntity<MenuItem> updateMenuItemComment(@PathVariable long id, @RequestBody MenuItemComment itemComment) {
+    public ResponseEntity<MenuItem> updateMenuItemComment(
+            @ApiParam(value = "Menu item comment Id to add/update menu item comment object", required = true) @PathVariable(value = "id") long id,
+            @ApiParam(value = "Add/update menu item comment object", required = true) @Valid @RequestBody MenuItemComment itemComment) {
 
         Optional<MenuItem> menuItemUpdated = menuRepository.findById(id);
         if (menuItemUpdated.isPresent()) {
@@ -90,8 +112,9 @@ public class MenuItemController {
         return ResponseEntity.unprocessableEntity().build();
     }
 
+    @ApiOperation(value = "Add a menu item")
     @PostMapping("/api/add")
-    public ResponseEntity<MenuItem> createMenuItem(@RequestBody MenuItem menuItem) {
+    public ResponseEntity<MenuItem> createMenuItem(@ApiParam(value = "Menu item object store in database table", required = true) @Valid @RequestBody MenuItem menuItem) {
         try {
             return new ResponseEntity<MenuItem>(menuItem, HttpStatus.CREATED);
         } catch (Exception e) {
@@ -100,6 +123,13 @@ public class MenuItemController {
 
     }
 
+    @ApiOperation(value = "Logout from the system", response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully retrieved list"),
+            @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+    })
     @GetMapping("/logoff")
     public void logout(HttpServletRequest request, HttpServletResponse response) {
         new SecurityContextLogoutHandler().logout(request, null, null);
