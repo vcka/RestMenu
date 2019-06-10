@@ -1,5 +1,7 @@
 var $ = require('jquery');
 var role = null;
+var origin  = location.host;
+//console.log(origin);
 var table = `<table class="table table-hover table-borderless">
                 <thead class="thead-dark">
                   <tr>
@@ -9,7 +11,7 @@ var table = `<table class="table table-hover table-borderless">
              </thead>`;
 
 $.ajax({
-  url: 'http://localhost:8089/api/params',
+  url: 'http://' + origin + '/api/params',
   async: false,
   success: function(data) {
     role = data.username;
@@ -21,7 +23,7 @@ $.ajax({
 });
 
 $.ajax({
-  url: 'http://localhost:8089/api/items',
+  url: 'http://' + origin + '/api/items',
   async: false,
   success: function(data) {
 
@@ -42,7 +44,7 @@ $.ajax({
 
 $('#dishesList').on('click', 'td', function() {
   var id = $(this).siblings().text();
-  $.getJSON('http://localhost:8089/api/items/' + id, function(data) {
+  $.getJSON('http://' + origin + '/api/items/' + id, function(data) {
     if (role == "admin") {
       $('.modal-body').html(`<form>
         <div class="form-group">
@@ -68,8 +70,11 @@ $('#dishesList').on('click', 'td', function() {
     }
   });
   if (role == "admin") {
-    $('.modal-footer').append(`<button id="delete" value="${id}" class="btn btn-danger">Delete</button>`);
-    $('.modal-footer').append(`<button id="save" value="${id}" class="btn btn-primary">Save</button>`);
+    $('.modal-footer').html(`<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                             <button id="delete" value="${id}" class="btn btn-danger">Delete</button>
+                             <button id="save" value="${id}" class="btn btn-primary">Save</button>`);
+//    $('.modal-footer').append(`<button id="delete" value="${id}" class="btn btn-danger">Delete</button>`);
+//    $('.modal-footer').append(`<button id="save" value="${id}" class="btn btn-primary">Save</button>`);
   }
   $('#exampleModal').modal('show');
 
@@ -82,12 +87,12 @@ $('#comments').on('click', 'button', function() {
     "comment": msg
   };
   $.ajax({
-    url: 'http://localhost:8089/api/comment/' + id,
+    url: 'http://' + origin + '/api/comment/' + id,
     contentType: 'application/json',
     type: 'PUT',
     data: JSON.stringify(data),
     success: function(data) {
-      $.getJSON('http://localhost:8089/api/items/' + id, function(data) {
+      $.getJSON('http://' + origin + '/api/items/' + id, function(data) {
         $('#description').html(data.description);
         $('#comments').html("");
         $.each(data.comments, function(key, value) {
@@ -106,7 +111,7 @@ $('#comments').on('click', 'button', function() {
 $('.modal-footer').on('click', '#delete', function() {
   var id = ($(this).val());
   $.ajax({
-    url: 'http://localhost:8089/api/remove/' + id,
+    url: 'http://' + origin + '/api/remove/' + id,
     type: 'DELETE',
     success: function(data) {
       $('#exampleModal').modal('hide');
@@ -125,7 +130,7 @@ $('.modal-footer').on('click', '#save', function() {
     "description": description
   };
   $.ajax({
-    url: 'http://localhost:8089/api/edit/' + id,
+    url: 'http://' + origin + '/api/edit/' + id,
     contentType: 'application/json',
     type: 'PUT',
     data: JSON.stringify(data),
@@ -148,7 +153,7 @@ $('.modal-footer').on('click', '#addItem', function() {
     "description": description
   };
   $.ajax({
-    url: 'http://localhost:8089/api/add/',
+    url: 'http://' + origin + '/api/add/',
     contentType: 'application/json',
     type: 'POST',
     data: JSON.stringify(data),

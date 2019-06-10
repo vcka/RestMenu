@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.BDDMockito.given;
@@ -45,7 +46,7 @@ public class RestMenuApplicationTests {
 		stock.setName("Kotletas");
 		stock.setDescription("Pats skaniausias");
 
-		List<MenuItem> menuItems = Arrays.asList(stock);
+		List<MenuItem> menuItems = Collections.singletonList(stock);
 		given(menuRepository.findAll()).willReturn(menuItems);
 
 		this.mockMvc.perform(get("/api/items"))
@@ -54,12 +55,12 @@ public class RestMenuApplicationTests {
 	}
 
 	@Test
-	@WithMockUser(password="password", value="admin")
+	@WithMockUser(password="{noop}password", value="admin", roles = "ADMIN")
 	public void addNewItem() throws Exception {
 		this.mockMvc.perform(
 				post("/api/add")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content("{\"name\":\"test\",\"description\":\"test\"}"))
-				.andExpect(content().string("{\"id\":null,\"name\":\"test\",\"description\":\"test\",\"comments\":[]}"));
+				.andExpect(content().string("Menu item saved"));
 	}
 }
