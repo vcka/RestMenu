@@ -39,10 +39,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vcka/Webpack-boiler.git"
+    "url": "git+https://github.com/vcka/RestMenu.git"
   },
   "bugs": {
-    "url": "https://github.com/vcka/Webpack-boiler/issues"
+    "url": "https://github.com/vcka/RestMenu/issues"
   },
-  "homepage": "https://github.com/vcka/Webpack-boiler#readme"
+  "homepage": "https://github.com/vcka/RestMenu#readme"
 }
